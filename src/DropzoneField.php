@@ -16,6 +16,7 @@ use SilverStripe\ORM\DataObject;
 use SilverStripe\ORM\SS_List;
 use SilverStripe\ORM\ValidationException;
 use SilverStripe\Security\NullSecurityToken;
+use SilverStripe\Core\Validation\ValidationResult;
 
 class DropzoneField extends FormField implements FileHandleField
 {
@@ -217,16 +218,16 @@ class DropzoneField extends FormField implements FileHandleField
     /**
      * Checks if the number of files attached adheres to the $allowedMaxFileNumber defined
      *
-     * @param Validator $validator
-     * @return bool
+     * @return ValidationResult
      */
-    public function validate($validator)
+    public function validate(): ValidationResult
     {
+        $validator = parent::validate();
         $maxFiles = $this->getAllowedMaxFileNumber();
         $count = count($this->getItems());
 
         if ($maxFiles < 1 || $count <= $maxFiles) {
-            return true;
+            return $validator;
         }
 
         $validator->validationError(
@@ -238,7 +239,7 @@ class DropzoneField extends FormField implements FileHandleField
             )
         );
 
-        return false;
+        return $validator;
     }
 
     public function getAttributes()
